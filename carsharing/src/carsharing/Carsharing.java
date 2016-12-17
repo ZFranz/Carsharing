@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class Carsharing {
 
@@ -55,6 +57,12 @@ public class Carsharing {
 		Combo combo = new Combo(shlCarsharing, SWT.NONE);
 		DateTime dateTime = new DateTime(shlCarsharing, SWT.BORDER);
 		Button btnCerca = new Button(shlCarsharing, SWT.NONE);
+		btnCerca.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				System.out.println("giorno: " + dateTime.getDay() + " mese: " + dateTime.getMonth());
+			}
+		});
 		table = new Table(shlCarsharing, SWT.BORDER | SWT.FULL_SELECTION);
 		TableColumn tblCodiceNoleggio = new TableColumn(table, SWT.NONE);
 		TableColumn tblAuto = new TableColumn(table, SWT.NONE);
