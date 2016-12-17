@@ -62,7 +62,6 @@ public class Carsharing {
 		TableColumn tblInizio = new TableColumn(table, SWT.NONE);
 		TableColumn tblFine = new TableColumn(table, SWT.NONE);
 		TableColumn tblAutoRestituita = new TableColumn(table, SWT.NONE);
-		TableItem tableItem = new TableItem(table, SWT.NONE);
 
 		combo.setItems(new String[] { "RSSMRA19T54A000Z", "RSSLCA21A78A000Q", "BNCLGO68B80E111T", "VRDNNA41C66S456W",
 				"DMALDA18D91A000A" });
@@ -94,12 +93,5 @@ public class Carsharing {
 
 		tblAutoRestituita.setWidth(85);
 		tblAutoRestituita.setText("auto restituita");
-
-		tableItem.setText(0, "5");
-		tableItem.setText(1, "BB333EE");
-		tableItem.setText(2, "VRDNNA41C66S456W");
-		tableItem.setText(3, "2016-12-02");
-		tableItem.setText(4, "2016-12-10");
-		tableItem.setText(5, "false");
 	}
 }
