@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Carsharing {
 
-	protected Shell shell;
+	protected Shell shlCarsharing;
 
 	/**
 	 * Launch the application.
@@ -26,9 +26,9 @@ public class Carsharing {
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
-		shell.open();
-		shell.layout();
-		while (!shell.isDisposed()) {
+		shlCarsharing.open();
+		shlCarsharing.layout();
+		while (!shlCarsharing.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -39,9 +39,9 @@ public class Carsharing {
 	 * Create contents of the window.
 	 */
 	protected void createContents() {
-		shell = new Shell();
-		shell.setSize(450, 300);
-		shell.setText("SWT Application");
+		shlCarsharing = new Shell();
+		shlCarsharing.setSize(450, 300);
+		shlCarsharing.setText("Carsharing");
 
 	}
 
