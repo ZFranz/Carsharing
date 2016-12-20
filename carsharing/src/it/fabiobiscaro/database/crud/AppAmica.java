@@ -135,6 +135,7 @@ public class AppAmica {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					System.out.println("Data: " + dataN);
 					int id = risultati.get(elementoSelezionato).getId();
 					Amico a = new Amico(id, nome, cognome, dataN);
 					// Salvo l'amico modificato nel database
