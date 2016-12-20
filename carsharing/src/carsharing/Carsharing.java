@@ -70,6 +70,7 @@ public class Carsharing {
 				java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 				Date dataI=null;
 				Date dataF=null;
+				String cf=combo.getText();
 				try {
 					dataI = df.parse(dateInizio.getYear() + "-" + dateInizio.getMonth() + "-" + dateInizio.getDay());
 					dataF = df.parse(dateFine.getYear() + "-" + dateFine.getMonth() + "-" + dateFine.getDay());
@@ -77,7 +78,7 @@ public class Carsharing {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				d.cercaNoleggio();
+				d.cercaNoleggio(dataI,dataF,cf);
 			}
 		});
 		table = new Table(shlCarsharing, SWT.BORDER | SWT.FULL_SELECTION);
