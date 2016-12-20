@@ -3,6 +3,11 @@ package carsharing;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Combo;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Button;
@@ -16,6 +21,7 @@ public class Carsharing {
 
 	protected Shell shlCarsharing;
 	private Table table;
+	Database d=new Database();
 
 	/**
 	 * Launch the application.
@@ -55,12 +61,23 @@ public class Carsharing {
 		shlCarsharing.setText("Carsharing");
 
 		Combo combo = new Combo(shlCarsharing, SWT.NONE);
-		DateTime dateTime = new DateTime(shlCarsharing, SWT.BORDER);
+		DateTime dateInizio = new DateTime(shlCarsharing, SWT.BORDER);
+		DateTime dateFine = new DateTime(shlCarsharing, SWT.BORDER);
 		Button btnCerca = new Button(shlCarsharing, SWT.NONE);
 		btnCerca.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("giorno: " + dateTime.getDay() + " mese: " + dateTime.getMonth());
+				java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+				Date dataI=null;
+				Date dataF=null;
+				try {
+					dataI = df.parse(dateInizio.getYear() + "-" + dateInizio.getMonth() + "-" + dateInizio.getDay());
+					dataF = df.parse(dateFine.getYear() + "-" + dateFine.getMonth() + "-" + dateFine.getDay());
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				d.cercaNoleggio();
 			}
 		});
 		table = new Table(shlCarsharing, SWT.BORDER | SWT.FULL_SELECTION);
@@ -75,7 +92,9 @@ public class Carsharing {
 				"DMALDA18D91A000A" });
 		combo.setBounds(10, 10, 193, 23);
 
-		dateTime.setBounds(219, 10, 80, 24);
+		dateInizio.setBounds(219, 10, 80, 24);
+		
+		dateFine.setBounds(305, 9, 80, 24);
 
 		btnCerca.setBounds(465, 8, 75, 25);
 		btnCerca.setText("Cerca");
@@ -101,5 +120,8 @@ public class Carsharing {
 
 		tblAutoRestituita.setWidth(85);
 		tblAutoRestituita.setText("auto restituita");
+		
+		
+		
 	}
 }
