@@ -79,7 +79,8 @@ public class Carsharing {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println(comboSocio.getSelectionIndex());
-				//cf = comboSocio.getText();
+				cf = comboSocio.getText().split("|")[0];
+				System.out.println(cf);
 			}
 		});
 

@@ -37,7 +37,7 @@ public class Database {
 			while (rs.next() == true) {
 				Noleggio n=new Noleggio(rs.getInt("codice_noleggio"),rs.getString("auto"),rs.getString("socio"),rs.getDate("inizio"),rs.getDate("fine"),rs.getBoolean("auto_restituita"));
 				System.out.println(n);
-				//elenco.add(n);
+				elenco.add(n);
 			}
 
 			cn.close(); // chiusura connessione
