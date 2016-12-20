@@ -1,5 +1,5 @@
 package carsharing;
 
-public class noleggio {
+public class Noleggio {
 
 }
