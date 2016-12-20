@@ -73,18 +73,19 @@ public class Carsharing {
 		TableColumn tblFine = new TableColumn(table, SWT.NONE);
 		TableColumn tblAutoRestituita = new TableColumn(table, SWT.NONE);
 
-		comboSocio.setItems(new String[] {"RSSMRA19T54A000Z\t|\tROSSI MARIO", "RSSLCA21A78A000Q\t|\tROSSI LUCA", "BNCLGO68B80E111T\t|\tBIANCHI OLGA", "VRDNNA41C66S456W\t|\tVERDI ANNA", "DMALDA18D91A000A\t|\tADAMI ALDO"});
-		comboSocio.setBounds(10, 10, 193, 23);
+		comboSocio.setItems(new String[] {"RSSMRA19T54A000Z\t| ROSSI MARIO", "RSSLCA21A78A000Q\t| ROSSI LUCA", "BNCLGO68B80E111T\t| BIANCHI OLGA", "VRDNNA41C66S456W\t| VERDI ANNA", "DMALDA18D91A000A\t| ADAMI ALDO"});
+		comboSocio.setBounds(10, 10, 277, 23);
 		comboSocio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				cf = comboSocio.getText();
+				System.out.println(comboSocio.getSelectionIndex());
+				//cf = comboSocio.getText();
 			}
 		});
 
-		dateInizio.setBounds(219, 10, 80, 24);
+		dateInizio.setBounds(293, 9, 80, 24);
 		
-		dateFine.setBounds(305, 9, 80, 24);
+		dateFine.setBounds(379, 10, 80, 24);
 
 		btnCerca.setBounds(465, 8, 75, 25);
 		btnCerca.setText("Cerca");
