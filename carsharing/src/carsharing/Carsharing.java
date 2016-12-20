@@ -6,6 +6,7 @@ import org.eclipse.swt.widgets.Combo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
@@ -26,7 +27,8 @@ public class Carsharing {
 	private Table table;
 	private String cf = "";
 	Database d = new Database();
-	private ArrayList<Noleggio> risultati = new ArrayList<Noleggio>();
+	private ArrayList<Noleggio> risultatiNoleggio = new ArrayList<Noleggio>();
+	private ArrayList<Auto> risultatiAuto = new ArrayList<Auto>();
 	java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	/**
@@ -57,7 +59,7 @@ public class Carsharing {
 			}
 		}
 	}
-
+	
 	private void svuotaTabella() {
 		table.removeAll();
 	}
@@ -95,12 +97,12 @@ public class Carsharing {
 		Button btnCerca = new Button(shlCarsharing, SWT.NONE);
 		btnCerca.setFont(SWTResourceManager.getFont("JasmineUPC", 20, SWT.NORMAL));
 		table = new Table(shlCarsharing, SWT.BORDER | SWT.FULL_SELECTION);
-		TableColumn tblCodiceNoleggio = new TableColumn(table, SWT.NONE);
-		TableColumn tblAuto = new TableColumn(table, SWT.NONE);
-		TableColumn tblSocio = new TableColumn(table, SWT.NONE);
-		TableColumn tblInizio = new TableColumn(table, SWT.NONE);
-		TableColumn tblFine = new TableColumn(table, SWT.NONE);
-		TableColumn tblAutoRestituita = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnCodiceNoleggio = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnAuto = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnSocio = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnInizio = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnFine = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
 
 		comboSocio.setItems(new String[] { "ROSSI MARIO", "ROSSI LUCA", "BIANCHI OLGA", "VERDI ANNA", "ADAMI ALDO" });
 		comboSocio.setBounds(10, 10, 350, 23);
@@ -146,15 +148,25 @@ public class Carsharing {
 					Date dataF = null;
 
 					try {
-						dataI = df
-								.parse(dateInizio.getYear() + "-" + dateInizio.getMonth() + "-" + dateInizio.getDay());
-						dataF = df.parse(dateFine.getYear() + "-" + dateFine.getMonth() + "-" + dateFine.getDay());
+						dataI = df.parse(dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
+						dataF = df.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					risultatiAuto = d.cercaAuto(dataI, dataF, cf);
+					/*Calendar data = Calendar.getInstance();
+					data.setTime(dataI);
+					String dataInizio = data.get(Calendar.YEAR) + "-" + data.get(Calendar.MONTH) + "-"
+							+ data.get(Calendar.DAY_OF_MONTH);
+					data.setTime(dataF);
+					String dataFine = data.get(Calendar.YEAR) + "-" + data.get(Calendar.MONTH) + "-"
+							+ data.get(Calendar.DAY_OF_MONTH);
 					
+					nuovoNoleggio(cf, dataInizio, dataFine);
 					
+					NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine);
+					noleggiaAuto.open();*/
 				}
 			}
 		});
@@ -186,23 +198,22 @@ public class Carsharing {
 					Date dataF = null;
 
 					try {
-						dataI = df
-								.parse(dateInizio.getYear() + "-" + dateInizio.getMonth() + "-" + dateInizio.getDay());
-						dataF = df.parse(dateFine.getYear() + "-" + dateFine.getMonth() + "-" + dateFine.getDay());
+						dataI = df.parse(dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
+						dataF = df.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					risultati = d.cercaNoleggio(dataI, dataF, cf);
+					risultatiNoleggio = d.cercaNoleggio(dataI, dataF, cf);
 
-					if (risultati.isEmpty()) {
+					if (risultatiNoleggio.isEmpty()) {
 						MessageBox messageBox = new MessageBox(shlCarsharing);
 						messageBox.setMessage("La ricerca non ha dato nessun risultato.");
 						messageBox.setText("Alert");
 						messageBox.open();
 					} else {
 						svuotaTabella();
-						popolaTabella(risultati);
+						popolaTabella(risultatiNoleggio);
 						cf = "";
 					}
 				}
@@ -213,22 +224,22 @@ public class Carsharing {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tblCodiceNoleggio.setWidth(100);
-		tblCodiceNoleggio.setText("codice noleggio");
+		tblclmnCodiceNoleggio.setWidth(100);
+		tblclmnCodiceNoleggio.setText("codice noleggio");
 
-		tblAuto.setWidth(70);
-		tblAuto.setText("auto");
+		tblclmnAuto.setWidth(70);
+		tblclmnAuto.setText("auto");
 
-		tblSocio.setWidth(130);
-		tblSocio.setText("socio");
+		tblclmnSocio.setWidth(130);
+		tblclmnSocio.setText("socio");
 
-		tblInizio.setWidth(75);
-		tblInizio.setText("inizio");
+		tblclmnInizio.setWidth(75);
+		tblclmnInizio.setText("inizio");
 
-		tblFine.setWidth(75);
-		tblFine.setText("fine");
+		tblclmnFine.setWidth(75);
+		tblclmnFine.setText("fine");
 
-		tblAutoRestituita.setWidth(85);
-		tblAutoRestituita.setText("auto restituita");
+		tblclmnAutoRestituita.setWidth(85);
+		tblclmnAutoRestituita.setText("auto restituita");
 	}
 }
