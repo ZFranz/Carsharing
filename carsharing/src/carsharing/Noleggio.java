@@ -9,9 +9,9 @@ public class Noleggio {
 	String socio;
 	Date inizio;
 	Date fine;
-	byte auto_restituita;
+	Boolean auto_restituita;
 
-	public Noleggio(int codice_noleggio, String auto, String socio, Date inizio, Date fine, byte auto_restituita) {
+	public Noleggio(int codice_noleggio, String auto, String socio, Date inizio, Date fine, Boolean auto_restituita) {
 		super();
 		this.codice_noleggio = codice_noleggio;
 		this.auto = auto;
@@ -61,11 +61,11 @@ public class Noleggio {
 		this.fine = fine;
 	}
 
-	public byte getAuto_restituita() {
+	public Boolean getAuto_restituita() {
 		return auto_restituita;
 	}
 
-	public void setAuto_restituita(byte auto_restituita) {
+	public void setAuto_restituita(Boolean auto_restituita) {
 		this.auto_restituita = auto_restituita;
 	}
 
