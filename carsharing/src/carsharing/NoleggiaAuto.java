@@ -3,10 +3,16 @@ package carsharing;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class NoleggiaAuto {
 
@@ -14,13 +20,18 @@ public class NoleggiaAuto {
 	private String cf = "";
 	private String dataInizio = "";
 	private String dataFine = "";
+	private ArrayList<Auto> auto = new ArrayList<Auto>();
 	private Table table;
+	private String targa = "";
+	private Database d;
 
-	public NoleggiaAuto(String cf, String dataInizio, String dataFine) {
+	public NoleggiaAuto(String cf, String dataInizio, String dataFine, ArrayList<Auto> auto, Database d) {
 		super();
 		this.cf = cf;
 		this.dataInizio = dataInizio;
 		this.dataFine = dataFine;
+		this.auto = auto;
+		this.d = d;
 	}
 
 	public NoleggiaAuto() {
@@ -61,30 +72,43 @@ public class NoleggiaAuto {
 	 */
 	protected void createContents() {
 		shlNoleggiaAuto = new Shell();
-		shlNoleggiaAuto.setSize(315, 300);
+		shlNoleggiaAuto.setSize(315, 275);
 		shlNoleggiaAuto.setText("Noleggia");
 
 		Label lblSocio = new Label(shlNoleggiaAuto, SWT.NONE);
 		Label lblDataInizio = new Label(shlNoleggiaAuto, SWT.NONE);
 		Label lblDataFine = new Label(shlNoleggiaAuto, SWT.NONE);
+		Label lblAutoDisponibili = new Label(shlNoleggiaAuto, SWT.NONE);
 		table = new Table(shlNoleggiaAuto, SWT.BORDER | SWT.FULL_SELECTION);
 		TableColumn tblclmnTarga = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnMarca = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnModello = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnPrezzoGiornaliero = new TableColumn(table, SWT.NONE);
-		
+		Button btnNoleggia = new Button(shlNoleggiaAuto, SWT.NONE);
+
 		lblSocio.setBounds(10, 10, 280, 15);
 		lblSocio.setText("Socio: " + cf);
-		
-		lblDataInizio.setBounds(10, 31, 280, 15);
-		lblDataInizio.setText("Data inizio: " + dataInizio);
-		
-		lblDataFine.setBounds(10, 52, 280, 15);
-		lblDataFine.setText("Data fine:" + dataFine);
 
-		table.setBounds(10, 94, 280, 140);
+		lblDataInizio.setBounds(10, 31, 280, 15);
+		lblDataInizio.setText("Data inizio:  " + dataInizio);
+
+		lblDataFine.setBounds(10, 52, 280, 15);
+		lblDataFine.setText("Data fine:  " + dataFine);
+
+		lblAutoDisponibili.setBounds(10, 73, 280, 15);
+		lblAutoDisponibili.setText("Auto Disponibili");
+
+		table.setBounds(10, 94, 280, 105);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem item = table.getItem(table.getSelectionIndex());
+				targa = item.getText(0);
+				System.out.println(targa);
+			}
+		});
 
 		tblclmnTarga.setWidth(60);
 		tblclmnTarga.setText("targa");
@@ -92,41 +116,28 @@ public class NoleggiaAuto {
 		tblclmnMarca.setWidth(45);
 		tblclmnMarca.setText("marca");
 
-		
 		tblclmnModello.setWidth(60);
 		tblclmnModello.setText("modello");
 
-		
 		tblclmnPrezzoGiornaliero.setWidth(110);
 		tblclmnPrezzoGiornaliero.setText("prezzo giornaliero");
-
-		TableItem tableItem1 = new TableItem(table, SWT.NONE);
-		tableItem1.setText(0, "AB009FG");
-		tableItem1.setText(1, "SEAT");
-		tableItem1.setText(2, "IBIZA");
-		tableItem1.setText(3, "25.00");
-
-		TableItem tableItem2 = new TableItem(table, SWT.NONE);
-		tableItem2.setText(0, "BC111KL");
-		tableItem2.setText(1, "SEAT");
-		tableItem2.setText(2, "LEON");
-		tableItem2.setText(3, "30.00");
-
-		TableItem tableItem3 = new TableItem(table, SWT.NONE);
-		tableItem3.setText(0, "AA222DS");
-		tableItem3.setText(1, "FIAT");
-		tableItem3.setText(2, "500");
-		tableItem3.setText(3, "27.00");
-
-		TableItem tableItem4 = new TableItem(table, SWT.NONE);
-		tableItem4.setText(0, "BB333EE");
-		tableItem4.setText(1, "FORD");
-		tableItem4.setText(2, "ESPACE");
-		tableItem4.setText(3, "50.00");
 		
-		Label lblAutoDisponibili = new Label(shlNoleggiaAuto, SWT.NONE);
-		lblAutoDisponibili.setBounds(10, 73, 280, 15);
-		lblAutoDisponibili.setText("Auto Disponibili");
-
+		for (int i = 0; i < auto.size(); i++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, auto.get(i).getTarga());
+			item.setText(1, auto.get(i).getMarca());
+			item.setText(2, auto.get(i).getModello());
+			item.setText(3, Double.toString(auto.get(i).getCosto_giornaliero()));
+		}
+		
+		btnNoleggia.setBounds(10, 205, 280, 25);
+		btnNoleggia.setText("Noleggia");
+		btnNoleggia.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				d.nuovoNoleggio(targa, cf, dataInizio, dataFine);
+				shlNoleggiaAuto.close();
+			}
+		});
 	}
 }

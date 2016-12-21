@@ -87,7 +87,8 @@ public class Carsharing {
 		shlCarsharing.setText("Carsharing");
 
 		Combo comboSocio = new Combo(shlCarsharing, SWT.NONE);
-
+		Label lblCodiceFiscale = new Label(shlCarsharing, SWT.NONE);
+		lblCodiceFiscale.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
 		Button btnNuovoNoleggio = new Button(shlCarsharing, SWT.NONE);
 		btnNuovoNoleggio.setFont(SWTResourceManager.getFont("JasmineUPC", 20, SWT.NORMAL));
 		Label lblDataInizio = new Label(shlCarsharing, SWT.NONE);
@@ -105,33 +106,41 @@ public class Carsharing {
 		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
 
 		comboSocio.setItems(new String[] { "ROSSI MARIO", "ROSSI LUCA", "BIANCHI OLGA", "VERDI ANNA", "ADAMI ALDO" });
-		comboSocio.setBounds(10, 10, 350, 23);
+		comboSocio.setBounds(10, 10, 120, 23);
 		comboSocio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				switch (comboSocio.getSelectionIndex()) {
 				case 0:
 					cf = "RSSMRA19T54A000Z";
+					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 1:
 					cf = "RSSLCA21A78A000Q";
+					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 2:
 					cf = "BNCLGO68B80E111T";
+					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 3:
 					cf = "VRDNNA41C66S456W";
+					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 4:
 					cf = "DMALDA18D91A000A";
+					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 				}
 			}
 		});
+		
+		lblCodiceFiscale.setBounds(139, 10, 221, 23);
+		lblCodiceFiscale.setText("CF: ");
 
 		btnNuovoNoleggio.setBounds(366, 8, 183, 25);
 		btnNuovoNoleggio.setText("Nuovo noleggio");
@@ -154,19 +163,33 @@ public class Carsharing {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					risultatiAuto = d.cercaAuto(dataI, dataF, cf);
-					/*Calendar data = Calendar.getInstance();
+					
+					Calendar data = Calendar.getInstance();
 					data.setTime(dataI);
-					String dataInizio = data.get(Calendar.YEAR) + "-" + data.get(Calendar.MONTH) + "-"
+					String dataInizio = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 							+ data.get(Calendar.DAY_OF_MONTH);
 					data.setTime(dataF);
-					String dataFine = data.get(Calendar.YEAR) + "-" + data.get(Calendar.MONTH) + "-"
+					String dataFine = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 							+ data.get(Calendar.DAY_OF_MONTH);
 					
-					nuovoNoleggio(cf, dataInizio, dataFine);
-					
-					NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine);
-					noleggiaAuto.open();*/
+					if(dataInizio.compareTo(dataFine) <= 0) {
+						risultatiAuto = d.cercaAuto(dataI, dataF, cf);
+						
+						if (risultatiAuto.isEmpty()) {
+							MessageBox messageBox = new MessageBox(shlCarsharing);
+							messageBox.setMessage("La ricerca non ha dato nessun risultato.");
+							messageBox.setText("Alert");
+							messageBox.open();
+						} else {
+							NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto, d);
+							noleggiaAuto.open();
+						}
+					} else {
+						MessageBox messageBox = new MessageBox(shlCarsharing);
+						messageBox.setMessage("Data non valida.");
+						messageBox.setText("Alert");
+						messageBox.open();
+					}
 				}
 			}
 		});
