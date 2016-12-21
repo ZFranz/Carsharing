@@ -104,8 +104,6 @@ public class Database {
 			while (rs.next() == true) {
 				targhe.add(rs.getString("auto"));
 			}
-			
-			System.out.println(targhe);
 
 			cn.close(); // chiusura connessione
 		} catch (SQLException e) {
