@@ -59,7 +59,7 @@ public class Carsharing {
 			}
 		}
 	}
-	
+
 	private void svuotaTabella() {
 		table.removeAll();
 	}
@@ -138,7 +138,7 @@ public class Carsharing {
 				}
 			}
 		});
-		
+
 		lblCodiceFiscale.setBounds(139, 10, 221, 23);
 		lblCodiceFiscale.setText("CF: ");
 
@@ -155,15 +155,28 @@ public class Carsharing {
 				} else {
 					Date dataI = null;
 					Date dataF = null;
+					Date date = null;
+					Calendar calendar = Calendar.getInstance();
+					String anno = Integer.toString(calendar.get(Calendar.YEAR));
+					String mese = Integer.toString(calendar.get(Calendar.MONTH) + 1);
+					String giorno = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+					try {
+						date = df.parse(anno + "-" + mese + "-" + giorno);
+					} catch (ParseException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 
 					try {
-						dataI = df.parse(dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
-						dataF = df.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
+						dataI = df.parse(
+								dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
+						dataF = df
+								.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					
+
 					Calendar data = Calendar.getInstance();
 					data.setTime(dataI);
 					String dataInizio = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
@@ -171,10 +184,36 @@ public class Carsharing {
 					data.setTime(dataF);
 					String dataFine = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 							+ data.get(Calendar.DAY_OF_MONTH);
-					
-					if(dataInizio.compareTo(dataFine) <= 0) {
+
+					if (dataI.before(dataF) || (dataI.equals(date) || dataI.after(date))) {
+						if (dataI.after(dataF)) {
+							MessageBox messageBox = new MessageBox(shlCarsharing);
+							messageBox.setMessage("Data non valida.");
+							messageBox.setText("Alert");
+							messageBox.open();
+						} else {
+							risultatiAuto = d.cercaAuto(dataI, dataF, cf);
+
+							if (risultatiAuto.isEmpty()) {
+								MessageBox messageBox = new MessageBox(shlCarsharing);
+								messageBox.setMessage("La ricerca non ha dato nessun risultato.");
+								messageBox.setText("Alert");
+								messageBox.open();
+							} else {
+								NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto, d);
+								noleggiaAuto.open();
+							}
+						}
+					} else {
+						MessageBox messageBox = new MessageBox(shlCarsharing);
+						messageBox.setMessage("Data non valida.");
+						messageBox.setText("Alert");
+						messageBox.open();
+					}
+
+					/*if (dataInizio.compareTo(dataFine) <= 0) {
 						risultatiAuto = d.cercaAuto(dataI, dataF, cf);
-						
+
 						if (risultatiAuto.isEmpty()) {
 							MessageBox messageBox = new MessageBox(shlCarsharing);
 							messageBox.setMessage("La ricerca non ha dato nessun risultato.");
@@ -189,7 +228,8 @@ public class Carsharing {
 						messageBox.setMessage("Data non valida.");
 						messageBox.setText("Alert");
 						messageBox.open();
-					}
+					}*/
+
 				}
 			}
 		});
@@ -221,8 +261,10 @@ public class Carsharing {
 					Date dataF = null;
 
 					try {
-						dataI = df.parse(dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
-						dataF = df.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
+						dataI = df.parse(
+								dateInizio.getYear() + "-" + (dateInizio.getMonth() + 1) + "-" + dateInizio.getDay());
+						dataF = df
+								.parse(dateFine.getYear() + "-" + (dateFine.getMonth() + 1) + "-" + dateFine.getDay());
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
