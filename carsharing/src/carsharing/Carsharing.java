@@ -210,26 +210,6 @@ public class Carsharing {
 						messageBox.setText("Alert");
 						messageBox.open();
 					}
-
-					/*if (dataInizio.compareTo(dataFine) <= 0) {
-						risultatiAuto = d.cercaAuto(dataI, dataF, cf);
-
-						if (risultatiAuto.isEmpty()) {
-							MessageBox messageBox = new MessageBox(shlCarsharing);
-							messageBox.setMessage("La ricerca non ha dato nessun risultato.");
-							messageBox.setText("Alert");
-							messageBox.open();
-						} else {
-							NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto, d);
-							noleggiaAuto.open();
-						}
-					} else {
-						MessageBox messageBox = new MessageBox(shlCarsharing);
-						messageBox.setMessage("Data non valida.");
-						messageBox.setText("Alert");
-						messageBox.open();
-					}*/
-
 				}
 			}
 		});
