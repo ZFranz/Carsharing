@@ -83,7 +83,7 @@ public class Carsharing {
 	 */
 	protected void createContents() {
 		shlCarsharing = new Shell();
-		shlCarsharing.setSize(575, 350);
+		shlCarsharing.setSize(650, 350);
 		shlCarsharing.setText("Carsharing");
 
 		Combo comboSocio = new Combo(shlCarsharing, SWT.NONE);
@@ -103,6 +103,10 @@ public class Carsharing {
 		TableColumn tblclmnSocio = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnInizio = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnFine = new TableColumn(table, SWT.NONE);
+		
+		TableColumn tblclmnAutoInUso = new TableColumn(table, SWT.NONE);
+		tblclmnAutoInUso.setWidth(75);
+		tblclmnAutoInUso.setText("auto in uso");
 		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
 
 		comboSocio.setItems(new String[] { "ROSSI MARIO", "ROSSI LUCA", "BIANCHI OLGA", "VERDI ANNA", "ADAMI ALDO" });
@@ -142,7 +146,7 @@ public class Carsharing {
 		lblCodiceFiscale.setBounds(139, 10, 221, 23);
 		lblCodiceFiscale.setText("CF: ");
 
-		btnNuovoNoleggio.setBounds(366, 8, 183, 25);
+		btnNuovoNoleggio.setBounds(441, 7, 183, 25);
 		btnNuovoNoleggio.setText("Nuovo noleggio");
 		btnNuovoNoleggio.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -226,7 +230,7 @@ public class Carsharing {
 
 		dateFine.setBounds(280, 39, 80, 24);
 
-		btnCerca.setBounds(366, 38, 183, 25);
+		btnCerca.setBounds(441, 38, 183, 25);
 		btnCerca.setText("Cerca");
 		btnCerca.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -265,7 +269,7 @@ public class Carsharing {
 			}
 		});
 
-		table.setBounds(10, 69, 539, 233);
+		table.setBounds(10, 69, 614, 233);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
