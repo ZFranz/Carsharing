@@ -72,7 +72,6 @@ public class Carsharing {
 		for(int i = 0; i < risultatiSocio.size(); i++) {
 			if(clienti[0].equals(risultatiSocio.get(i).getCognome()) && clienti[1].equals(risultatiSocio.get(i).getNome())) {
 				codiceFiscale = risultatiSocio.get(i).getCf();
-				System.out.println(codiceFiscale);
 			}
 		}
 		return codiceFiscale;
