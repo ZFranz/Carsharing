@@ -29,6 +29,7 @@ public class Carsharing {
 	Database d = new Database();
 	private ArrayList<Noleggio> risultatiNoleggio = new ArrayList<Noleggio>();
 	private ArrayList<Auto> risultatiAuto = new ArrayList<Auto>();
+	private ArrayList<Socio> risultatiSocio = new ArrayList<Socio>();
 	java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	/**
@@ -60,6 +61,23 @@ public class Carsharing {
 		}
 	}
 
+	/**
+	 * restituisce il codice fiscale dati in ingresso cognome e nome
+	 * @param cliente
+	 * @return codiceFiscale
+	 */
+	private String ottieniCF(String cliente) {
+		String codiceFiscale = "";
+		String clienti[] = cliente.split(" ");
+		for(int i = 0; i < risultatiSocio.size(); i++) {
+			if(clienti[0].equals(risultatiSocio.get(i).getCognome()) && clienti[1].equals(risultatiSocio.get(i).getNome())) {
+				codiceFiscale = risultatiSocio.get(i).getCf();
+				System.out.println(codiceFiscale);
+			}
+		}
+		return codiceFiscale;
+	}
+	
 	private void svuotaTabella() {
 		table.removeAll();
 	}
@@ -109,34 +127,38 @@ public class Carsharing {
 		tblclmnAutoInUso.setText("auto in uso");
 		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
 
-		comboSocio.setItems(new String[] { "ROSSI MARIO", "ROSSI LUCA", "BIANCHI OLGA", "VERDI ANNA", "ADAMI ALDO" });
+		risultatiSocio = d.listaSoci();
+		
+		for(int i = 0; i < risultatiSocio.size(); i++) {
+			comboSocio.add(risultatiSocio.get(i).getCognome() + " " + risultatiSocio.get(i).getNome());
+		}
 		comboSocio.setBounds(10, 10, 120, 23);
 		comboSocio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				switch (comboSocio.getSelectionIndex()) {
 				case 0:
-					cf = "RSSMRA19T54A000Z";
+					cf = ottieniCF(comboSocio.getText());
 					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 1:
-					cf = "RSSLCA21A78A000Q";
+					cf = ottieniCF(comboSocio.getText());
 					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 2:
-					cf = "BNCLGO68B80E111T";
+					cf = ottieniCF(comboSocio.getText());
 					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 3:
-					cf = "VRDNNA41C66S456W";
+					cf = ottieniCF(comboSocio.getText());
 					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 
 				case 4:
-					cf = "DMALDA18D91A000A";
+					cf = ottieniCF(comboSocio.getText());
 					lblCodiceFiscale.setText("CF: " + cf);
 					break;
 				}
@@ -256,6 +278,7 @@ public class Carsharing {
 					risultatiNoleggio = d.cercaNoleggio(dataI, dataF, cf);
 
 					if (risultatiNoleggio.isEmpty()) {
+						svuotaTabella();
 						MessageBox messageBox = new MessageBox(shlCarsharing);
 						messageBox.setMessage("La ricerca non ha dato nessun risultato.");
 						messageBox.setText("Alert");
@@ -264,6 +287,8 @@ public class Carsharing {
 						svuotaTabella();
 						popolaTabella(risultatiNoleggio);
 						cf = "";
+						comboSocio.setText("");
+						lblCodiceFiscale.setText("CF:");
 					}
 				}
 			}
