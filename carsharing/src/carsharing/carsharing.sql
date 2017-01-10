@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Creato il: Dic 17, 2016 alle 10:48
+-- Creato il: Gen 10, 2017 alle 10:14
 -- Versione del server: 10.1.13-MariaDB
 -- Versione PHP: 7.0.5
 
@@ -55,6 +55,7 @@ CREATE TABLE `noleggi` (
   `socio` varchar(16) NOT NULL,
   `inizio` date NOT NULL,
   `fine` date NOT NULL,
+  `auto_in_uso` tinyint(1) NOT NULL,
   `auto_restituita` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -62,13 +63,13 @@ CREATE TABLE `noleggi` (
 -- Dump dei dati per la tabella `noleggi`
 --
 
-INSERT INTO `noleggi` (`codice_noleggio`, `auto`, `socio`, `inizio`, `fine`, `auto_restituita`) VALUES
-(1, 'AB009FG', 'RSSMRA19T54A000Z', '2015-12-23', '2016-01-03', 1),
-(2, 'AB009FG', 'RSSMRA19T54A000Z', '2016-04-15', '2016-04-30', 1),
-(3, 'BB333EE', 'BNCLGO68B80E111T', '2016-01-20', '2016-01-25', 1),
-(4, 'BB333EE', 'RSSMRA19T54A000Z', '2016-10-03', '2016-11-01', 1),
-(5, 'BB333EE', 'VRDNNA41C66S456W', '2016-12-02', '2016-12-10', 0),
-(6, 'AA222DS', 'RSSMRA19T54A000Z', '2017-02-10', '2017-02-15', 0);
+INSERT INTO `noleggi` (`codice_noleggio`, `auto`, `socio`, `inizio`, `fine`, `auto_in_uso`, `auto_restituita`) VALUES
+(1, 'AB009FG', 'RSSMRA19T54A000Z', '2015-12-23', '2016-01-03', 1, 1),
+(2, 'AB009FG', 'RSSMRA19T54A000Z', '2016-04-15', '2016-04-30', 1, 1),
+(3, 'BB333EE', 'BNCLGO68B80E111T', '2016-01-20', '2016-01-25', 1, 1),
+(4, 'BB333EE', 'RSSMRA19T54A000Z', '2016-10-03', '2016-11-01', 1, 1),
+(5, 'BB333EE', 'VRDNNA41C66S456W', '2016-12-02', '2016-12-10', 1, 0),
+(6, 'AA222DS', 'RSSMRA19T54A000Z', '2017-02-10', '2017-02-15', 0, 0);
 
 -- --------------------------------------------------------
 
