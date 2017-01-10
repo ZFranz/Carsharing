@@ -9,15 +9,17 @@ public class Noleggio {
 	String socio;
 	Date inizio;
 	Date fine;
+	Boolean auto_in_uso;
 	Boolean auto_restituita;
 
-	public Noleggio(int codice_noleggio, String auto, String socio, Date inizio, Date fine, Boolean auto_restituita) {
+	public Noleggio(int codice_noleggio, String auto, String socio, Date inizio, Date fine, Boolean auto_in_uso, Boolean auto_restituita) {
 		super();
 		this.codice_noleggio = codice_noleggio;
 		this.auto = auto;
 		this.socio = socio;
 		this.inizio = inizio;
 		this.fine = fine;
+		this.auto_in_uso = auto_in_uso;
 		this.auto_restituita = auto_restituita;
 	}
 
@@ -61,6 +63,14 @@ public class Noleggio {
 		this.fine = fine;
 	}
 
+	public Boolean getAuto_in_uso() {
+		return auto_in_uso;
+	}
+
+	public void setAuto_in_uso(Boolean auto_in_uso) {
+		this.auto_in_uso = auto_in_uso;
+	}
+
 	public Boolean getAuto_restituita() {
 		return auto_restituita;
 	}
@@ -72,6 +82,7 @@ public class Noleggio {
 	@Override
 	public String toString() {
 		return "Noleggio [codice_noleggio=" + codice_noleggio + ", auto=" + auto + ", socio=" + socio + ", inizio="
-				+ inizio + ", fine=" + fine + ", auto_restituita=" + auto_restituita + "]";
+				+ inizio + ", fine=" + fine + ", auto_in_uso=" + auto_in_uso + ", auto_restituita=" + auto_restituita
+				+ "]";
 	}
 }

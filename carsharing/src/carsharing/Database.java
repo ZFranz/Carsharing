@@ -93,7 +93,7 @@ public class Database {
 										// connessione
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
-				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"), rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_restituita"));
+				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"), rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso") , rs.getBoolean("auto_restituita"));
 				elenco.add(n);
 			}
 
@@ -111,7 +111,7 @@ public class Database {
 	 * @param dataI
 	 * @param dataF
 	 * @param cf
-	 * @return
+	 * @return elenco
 	 */
 	public ArrayList<Auto> cercaAuto(Date dataI, Date dataF, String cf) {
 		ArrayList<Auto> elenco = new ArrayList<Auto>();
@@ -137,7 +137,7 @@ public class Database {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "SELECT noleggi.auto FROM noleggi WHERE noleggi.auto_restituita=0;";
+			sql = "SELECT noleggi.auto FROM noleggi WHERE noleggi.auto_restituita=0 AND noleggi.auto_in_uso=1;";
 			System.out.println(sql); // stampa la query
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
@@ -152,12 +152,12 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-
+		
 		try {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "SELECT * FROM auto LEFT JOIN noleggi ON auto.targa=noleggi.auto WHERE noleggi.auto_restituita IS NULL OR (noleggi.auto_restituita=1 AND noleggi.fine<'" + dataInizio + "') GROUP BY auto.targa;";
+			sql = "SELECT * FROM auto LEFT JOIN noleggi ON auto.targa=noleggi.auto WHERE noleggi.auto_restituita IS NULL OR (noleggi.auto_restituita=1 OR noleggi.auto_in_uso=0) GROUP BY auto.targa;";
 			System.out.println(sql); // stampa la query
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
@@ -208,7 +208,7 @@ public class Database {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "INSERT INTO noleggi (auto, socio, inizio, fine, auto_restituita) VALUES ('" + targa + "', '" + cf + "', '" + dataInizio+ "', '" + dataFine + "', 0);";
+			sql = "INSERT INTO noleggi (auto, socio, inizio, fine, auto_in_uso, auto_restituita) VALUES ('" + targa + "', '" + cf + "', '" + dataInizio+ "', '" + dataFine + "', 0, 0);";
 			System.out.println(sql);
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
