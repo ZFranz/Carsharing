@@ -184,6 +184,50 @@ public class Database {
 	}
 	
 	/**
+	 * controlla se l'auto è prenotabile
+	 * @param targa
+	 * @param dataFine
+	 * @return
+	 */
+	public Boolean controllaDate(String targa, String dataFine) {
+		ArrayList<Noleggio> elenco = new ArrayList<Noleggio>();
+		Connection cn;
+		Statement st;
+		ResultSet rs;
+		String sql;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			System.out.println("ClassNotFoundException: ");
+			System.err.println(e.getMessage());
+		} // fine try-catch
+
+		try {
+			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
+
+			// ________________________________query
+			sql = "SELECT * FROM noleggi;";
+			System.out.println(sql); // stampa la query
+
+			st = cn.createStatement(); // creo sempre uno statement sulla
+										// connessione
+			rs = st.executeQuery(sql); // faccio la query su uno statement
+			while (rs.next() == true) {
+				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"), rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso") , rs.getBoolean("auto_restituita"));
+				elenco.add(n);
+			}
+
+			cn.close(); // chiusura connessione
+		} catch (SQLException e) {
+			System.out.println("errore:" + e.getMessage());
+			e.printStackTrace();
+		} // fine try-catch
+		
+		return null;
+	}
+	
+	/**
 	 * Inserisco un nuovo noleggio
 	 * @param targa
 	 * @param cf

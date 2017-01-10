@@ -24,6 +24,7 @@ public class NoleggiaAuto {
 	private Table table;
 	private String targa = "";
 	private Database d;
+	private Boolean controllo;
 
 	public NoleggiaAuto(String cf, String dataInizio, String dataFine, ArrayList<Auto> auto, Database d) {
 		super();
@@ -135,7 +136,8 @@ public class NoleggiaAuto {
 		btnNoleggia.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				d.nuovoNoleggio(targa, cf, dataInizio, dataFine);
+				controllo = d.controllaDate(targa, dataFine);
+				//d.nuovoNoleggio(targa, cf, dataInizio, dataFine);
 				shlNoleggiaAuto.close();
 			}
 		});
