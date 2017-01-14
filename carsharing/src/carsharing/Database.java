@@ -23,7 +23,7 @@ public class Database {
 		Statement st;
 		ResultSet rs;
 		String sql;
-		
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -42,7 +42,8 @@ public class Database {
 										// connessione
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
-				Socio s = new Socio(rs.getString("cf"), rs.getString("cognome"), rs.getString("nome"), rs.getString("indirizzo"), rs.getString("telefono"));
+				Socio s = new Socio(rs.getString("cf"), rs.getString("cognome"), rs.getString("nome"),
+						rs.getString("indirizzo"), rs.getString("telefono"));
 				elenco.add(s);
 			}
 
@@ -51,12 +52,13 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-		
+
 		return elenco;
 	}
-	
+
 	/**
 	 * Cerca l'elenco dei noleggi dati un data d'inizio e una di fine
+	 * 
 	 * @param dataI
 	 * @param dataF
 	 * @param cf
@@ -68,7 +70,7 @@ public class Database {
 		Statement st;
 		ResultSet rs;
 		String sql;
-		
+
 		Calendar data = Calendar.getInstance();
 		data.setTime(dataI);
 		String dataInizio = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
@@ -76,7 +78,7 @@ public class Database {
 		data.setTime(dataF);
 		String dataFine = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 				+ data.get(Calendar.DAY_OF_MONTH);
-		
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -88,14 +90,17 @@ public class Database {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "SELECT * FROM noleggi WHERE socio='" + cf + "' AND inizio>='" + dataInizio + "' AND inizio<='" + dataFine + "';";
+			sql = "SELECT * FROM noleggi WHERE socio='" + cf + "' AND inizio>='" + dataInizio + "' AND inizio<='"
+					+ dataFine + "';";
 			System.out.println(sql); // stampa la query
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
 										// connessione
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
-				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"), rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso") , rs.getBoolean("auto_restituita"));
+				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"),
+						rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso"),
+						rs.getBoolean("auto_restituita"));
 				elenco.add(n);
 			}
 
@@ -104,12 +109,13 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-		
+
 		return elenco;
 	}
-	
+
 	/**
 	 * Cerca auto disponibili
+	 * 
 	 * @param dataI
 	 * @param dataF
 	 * @param cf
@@ -126,7 +132,7 @@ public class Database {
 		Date datatemp = null;
 		String datad = "";
 		String temp = "";
-		
+
 		Calendar data = Calendar.getInstance();
 		data.setTime(dataI);
 		String dataInizio = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
@@ -148,15 +154,14 @@ public class Database {
 			e1.printStackTrace();
 		}
 		dataFine = df.format(datatemp);
-		
-		
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			System.out.println("ClassNotFoundException: ");
 			System.err.println(e.getMessage());
 		} // fine try-catch
-		
+
 		try {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
@@ -176,7 +181,7 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-		
+
 		try {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
@@ -188,22 +193,20 @@ public class Database {
 										// connessione
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
-				for(int i = 0; i < targhe.size(); i++) {
-					datad = rs.getString("inizio");
-					if(targhe.get(i).equals(rs.getString("targa"))) {
+				for (int i = 0; i < targhe.size(); i++) {
+					if (targhe.get(i).equals(rs.getString("targa"))) {
 						break;
-					} else if(rs.getString("codice_noleggio").equals(null)) {
-						System.out.println("Null");
-					}
-					
-					else if(datad != null) {
-						System.out.println("Datad: " + datad);
-						System.out.println("Data Inizio: " + dataInizio);
-						System.out.println(datad.compareTo(dataInizio));
-						if (datad.compareTo(dataInizio) < 0){
-							break;
+					} else if (i == (targhe.size() - 1)) {
+						datad = rs.getString("inizio");
+						temp = rs.getString("auto_restituita");
+						if(datad != null) { // se la data nel database non è vuota controlla se è prenotabile
+							if(datad.compareTo(dataInizio) <= 0 && temp.equals("0")) {
+								break;
+							}
+							if(datad.compareTo(dataFine) <= 0 && temp.equals("0")) {
+								break;
+							}
 						}
-					} else if(i == (targhe.size() - 1)){
 						Auto a = new Auto(rs.getString("targa"), rs.getString("marca"), rs.getString("modello"), rs.getDouble("costo_giornaliero"));
 						elenco.add(a);
 					}
@@ -215,12 +218,13 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-		
+
 		return elenco;
 	}
-	
+
 	/**
 	 * controlla se l'auto è prenotabile
+	 * 
 	 * @param targa
 	 * @param dataFine
 	 * @return
@@ -234,7 +238,7 @@ public class Database {
 		java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		Date fine = null;
 		String dated = "";
-		
+
 		try {
 			fine = df.parse(dataFine);
 			dataFine = df.format(fine);
@@ -242,7 +246,7 @@ public class Database {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -261,7 +265,9 @@ public class Database {
 										// connessione
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
-				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"), rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso") , rs.getBoolean("auto_restituita"));
+				Noleggio n = new Noleggio(rs.getInt("codice_noleggio"), rs.getString("auto"), rs.getString("socio"),
+						rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso"),
+						rs.getBoolean("auto_restituita"));
 				elenco.add(n);
 			}
 
@@ -270,24 +276,25 @@ public class Database {
 			System.out.println("errore:" + e.getMessage());
 			e.printStackTrace();
 		} // fine try-catch
-		
-		if(elenco.isEmpty()) {
+
+		if (elenco.isEmpty()) {
 			return null;
 		} else {
 			dated = df.format(elenco.get(0).getInizio());
 			String result = "";
 			result = elenco.get(0).getInizio() + "/" + elenco.get(0).getFine();
-			if(dated.compareTo(dataFine) == -1) {
+			if (dated.compareTo(dataFine) == -1) {
 				return null;
 			} else {
 				return null;
-				//return false;
+				// return false;
 			}
-		}		
+		}
 	}
-	
+
 	/**
 	 * Inserisco un nuovo noleggio
+	 * 
 	 * @param targa
 	 * @param cf
 	 * @param dataInizio
@@ -297,7 +304,7 @@ public class Database {
 		Connection cn;
 		Statement st;
 		String sql;
-		
+
 		// ________________________________connessione
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -311,7 +318,8 @@ public class Database {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "INSERT INTO noleggi (auto, socio, inizio, fine, auto_in_uso, auto_restituita) VALUES ('" + targa + "', '" + cf + "', '" + dataInizio+ "', '" + dataFine + "', 0, 0);";
+			sql = "INSERT INTO noleggi (auto, socio, inizio, fine, auto_in_uso, auto_restituita) VALUES ('" + targa
+					+ "', '" + cf + "', '" + dataInizio + "', '" + dataFine + "', 0, 0);";
 			System.out.println(sql);
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
