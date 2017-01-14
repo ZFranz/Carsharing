@@ -107,7 +107,6 @@ public class NoleggiaAuto {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem item = table.getItem(table.getSelectionIndex());
 				targa = item.getText(0);
-				System.out.println(targa);
 			}
 		});
 
@@ -136,7 +135,7 @@ public class NoleggiaAuto {
 		btnNoleggia.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				controllo = d.controllaDate(targa, dataFine);
+				//controllo = d.controllaDate(targa, dataFine);
 				//d.nuovoNoleggio(targa, cf, dataInizio, dataFine);
 				shlNoleggiaAuto.close();
 			}

@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -195,6 +197,17 @@ public class Database {
 		Statement st;
 		ResultSet rs;
 		String sql;
+		java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date fine = null;
+		String dated = "";
+		
+		try {
+			fine = df.parse(dataFine);
+			dataFine = df.format(fine);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -207,7 +220,7 @@ public class Database {
 			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
 
 			// ________________________________query
-			sql = "SELECT * FROM noleggi;";
+			sql = "SELECT * FROM noleggi WHERE auto='" + targa + "' AND auto_in_uso=0;";
 			System.out.println(sql); // stampa la query
 
 			st = cn.createStatement(); // creo sempre uno statement sulla
@@ -224,7 +237,19 @@ public class Database {
 			e.printStackTrace();
 		} // fine try-catch
 		
-		return null;
+		if(elenco.isEmpty()) {
+			return null;
+		} else {
+			dated = df.format(elenco.get(0).getInizio());
+			String result = "";
+			result = elenco.get(0).getInizio() + "/" + elenco.get(0).getFine();
+			if(dated.compareTo(dataFine) == -1) {
+				return null;
+			} else {
+				return null;
+				//return false;
+			}
+		}		
 	}
 	
 	/**
