@@ -122,11 +122,33 @@ public class Database {
 		Statement st;
 		ResultSet rs;
 		String sql;
+		java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date datatemp = null;
+		String datad = "";
+		String temp = "";
 		
 		Calendar data = Calendar.getInstance();
 		data.setTime(dataI);
 		String dataInizio = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 				+ data.get(Calendar.DAY_OF_MONTH);
+		data.setTime(dataF);
+		String dataFine = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
+				+ data.get(Calendar.DAY_OF_MONTH);
+		try {
+			datatemp = df.parse(dataInizio);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		dataInizio = df.format(datatemp);
+		try {
+			datatemp = df.parse(dataFine);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		dataFine = df.format(datatemp);
+		
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -167,8 +189,20 @@ public class Database {
 			rs = st.executeQuery(sql); // faccio la query su uno statement
 			while (rs.next() == true) {
 				for(int i = 0; i < targhe.size(); i++) {
+					datad = rs.getString("inizio");
 					if(targhe.get(i).equals(rs.getString("targa"))) {
 						break;
+					} else if(rs.getString("codice_noleggio").equals(null)) {
+						System.out.println("Null");
+					}
+					
+					else if(datad != null) {
+						System.out.println("Datad: " + datad);
+						System.out.println("Data Inizio: " + dataInizio);
+						System.out.println(datad.compareTo(dataInizio));
+						if (datad.compareTo(dataInizio) < 0){
+							break;
+						}
 					} else if(i == (targhe.size() - 1)){
 						Auto a = new Auto(rs.getString("targa"), rs.getString("marca"), rs.getString("modello"), rs.getDouble("costo_giornaliero"));
 						elenco.add(a);
