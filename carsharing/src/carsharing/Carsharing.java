@@ -316,16 +316,16 @@ public class Carsharing {
 				temp_dataInizio = tableItem.getText(3);
 				temp_dataFine = tableItem.getText(4);
 				temp_auto_in_uso = tableItem.getText(5);
+				temp_auto_restituita = tableItem.getText(6);
 				if (temp_auto_in_uso.equals("false")) {
 					btnConfermaPrenotazione.setEnabled(true);
 				} else {
 					btnConfermaPrenotazione.setEnabled(false);
-				}
-				temp_auto_restituita = tableItem.getText(6);
-				if (temp_auto_restituita.equals("false")) {
-					btnConsegnaAuto.setEnabled(true);
-				} else {
-					btnConsegnaAuto.setEnabled(false);
+					if (temp_auto_restituita.equals("false")) {
+						btnConsegnaAuto.setEnabled(true);
+					} else {
+						btnConsegnaAuto.setEnabled(false);
+					}
 				}
 			}
 		});
@@ -357,6 +357,7 @@ public class Carsharing {
 			public void widgetSelected(SelectionEvent e) {
 				d.confermaPrenotazione(targa);
 				svuotaTabella();
+				btnConfermaPrenotazione.setEnabled(false);
 			}
 		});
 		btnConfermaPrenotazione.setBounds(10, 275, 150, 25);
@@ -389,8 +390,11 @@ public class Carsharing {
 						
 						data1 = df.parse(temp_dataInizio);
 						data2 = df.parse(temp_dataFine);
-						long diff = data2.getTime() - data1.getTime();
-						System.out.println(diff / (1000 * 60 * 60 * 24));
+						
+						// calcolo la differenza tra la data d'inizio e quella di fine
+						int diff = (int) (data2.getTime() - data1.getTime());
+						diff = diff / 86400000;
+						System.out.println(diff);
 					} else {
 						
 					}
