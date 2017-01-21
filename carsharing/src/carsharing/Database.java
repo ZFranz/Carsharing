@@ -102,6 +102,7 @@ public class Database {
 						rs.getDate("inizio"), rs.getDate("fine"), rs.getBoolean("auto_in_uso"),
 						rs.getBoolean("auto_restituita"));
 				elenco.add(n);
+				System.out.println(n);
 			}
 
 			cn.close(); // chiusura connessione
@@ -250,6 +251,36 @@ public class Database {
 			// ________________________________query
 			sql = "INSERT INTO noleggi (auto, socio, inizio, fine, auto_in_uso, auto_restituita) VALUES ('" + targa
 					+ "', '" + cf + "', '" + dataInizio + "', '" + dataFine + "', 0, 0);";
+			System.out.println(sql);
+
+			st = cn.createStatement(); // creo sempre uno statement sulla
+										// connessione
+			st.execute(sql); // faccio la query su uno statement
+			cn.close(); // chiusura connessione
+		} catch (SQLException e) {
+			System.out.println("errore:" + e.getMessage());
+		} // fine try-catch
+	}
+	
+	public void confermaPrenotazione(String targa) {
+		Connection cn;
+		Statement st;
+		String sql;
+
+		// ________________________________connessione
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			System.out.println("ClassNotFoundException: ");
+			System.err.println(e.getMessage());
+		} // fine try-catch
+
+		try {
+			// Creo la connessione al database
+			cn = DriverManager.getConnection("jdbc:mysql://localhost:3306/carsharing?user=root&password=");
+
+			// ________________________________query
+			sql = "UPDATE noleggi SET auto_in_uso=true WHERE noleggi.auto='" + targa + "';";
 			System.out.println(sql);
 
 			st = cn.createStatement(); // creo sempre uno statement sulla

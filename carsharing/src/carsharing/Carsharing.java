@@ -31,6 +31,11 @@ public class Carsharing {
 	private ArrayList<Auto> risultatiAuto = new ArrayList<Auto>();
 	private ArrayList<Socio> risultatiSocio = new ArrayList<Socio>();
 	java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	String temp_auto_in_uso = "";
+	String temp_auto_restituita = "";
+	String targa = "";
+	String temp_dataInizio = "";
+	String temp_dataFine  = "";
 
 	/**
 	 * Launch the application.
@@ -63,20 +68,22 @@ public class Carsharing {
 
 	/**
 	 * restituisce il codice fiscale dati in ingresso cognome e nome
+	 * 
 	 * @param cliente
 	 * @return codiceFiscale
 	 */
 	private String ottieniCF(String cliente) {
 		String codiceFiscale = "";
 		String clienti[] = cliente.split(" ");
-		for(int i = 0; i < risultatiSocio.size(); i++) {
-			if(clienti[0].equals(risultatiSocio.get(i).getCognome()) && clienti[1].equals(risultatiSocio.get(i).getNome())) {
+		for (int i = 0; i < risultatiSocio.size(); i++) {
+			if (clienti[0].equals(risultatiSocio.get(i).getCognome())
+					&& clienti[1].equals(risultatiSocio.get(i).getNome())) {
 				codiceFiscale = risultatiSocio.get(i).getCf();
 			}
 		}
 		return codiceFiscale;
 	}
-	
+
 	private void svuotaTabella() {
 		table.removeAll();
 	}
@@ -91,7 +98,8 @@ public class Carsharing {
 			item.setText(2, risultati.get(i).getSocio());
 			item.setText(3, dataInizio);
 			item.setText(4, dataFine);
-			item.setText(5, Boolean.toString(risultati.get(i).getAuto_restituita()));
+			item.setText(5, Boolean.toString(risultati.get(i).getAuto_in_uso()));
+			item.setText(6, Boolean.toString(risultati.get(i).getAuto_restituita()));
 		}
 	}
 
@@ -100,7 +108,7 @@ public class Carsharing {
 	 */
 	protected void createContents() {
 		shlCarsharing = new Shell();
-		shlCarsharing.setSize(650, 350);
+		shlCarsharing.setSize(650, 395);
 		shlCarsharing.setText("Carsharing");
 
 		Combo comboSocio = new Combo(shlCarsharing, SWT.NONE);
@@ -120,15 +128,17 @@ public class Carsharing {
 		TableColumn tblclmnSocio = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnInizio = new TableColumn(table, SWT.NONE);
 		TableColumn tblclmnFine = new TableColumn(table, SWT.NONE);
-		
 		TableColumn tblclmnAutoInUso = new TableColumn(table, SWT.NONE);
-		tblclmnAutoInUso.setWidth(75);
-		tblclmnAutoInUso.setText("auto in uso");
 		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
+		Button btnConfermaPrenotazione = new Button(shlCarsharing, SWT.NONE);
+		DateTime dateConsegna = new DateTime(shlCarsharing, SWT.BORDER);
+		Label lblDataConsegna = new Label(shlCarsharing, SWT.NONE);
+		Button btnConsegnaAuto = new Button(shlCarsharing, SWT.NONE);
+		btnConsegnaAuto.setEnabled(false);
 
 		risultatiSocio = d.listaSoci();
-		
-		for(int i = 0; i < risultatiSocio.size(); i++) {
+
+		for (int i = 0; i < risultatiSocio.size(); i++) {
 			comboSocio.add(risultatiSocio.get(i).getCognome() + " " + risultatiSocio.get(i).getNome());
 		}
 		comboSocio.setBounds(10, 10, 120, 23);
@@ -225,7 +235,8 @@ public class Carsharing {
 								messageBox.setText("Alert");
 								messageBox.open();
 							} else {
-								NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto, d);
+								NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto,
+										d);
 								noleggiaAuto.open();
 							}
 						}
@@ -293,9 +304,31 @@ public class Carsharing {
 			}
 		});
 
-		table.setBounds(10, 69, 614, 233);
+		table.setBounds(10, 69, 614, 200);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TableItem tableItem = new TableItem(table, SWT.NONE);
+				tableItem = table.getItem(table.getSelectionIndex());
+				targa = tableItem.getText(1);
+				temp_dataInizio = tableItem.getText(3);
+				temp_dataFine = tableItem.getText(4);
+				temp_auto_in_uso = tableItem.getText(5);
+				if (temp_auto_in_uso.equals("false")) {
+					btnConfermaPrenotazione.setEnabled(true);
+				} else {
+					btnConfermaPrenotazione.setEnabled(false);
+				}
+				temp_auto_restituita = tableItem.getText(6);
+				if (temp_auto_restituita.equals("false")) {
+					btnConsegnaAuto.setEnabled(true);
+				} else {
+					btnConsegnaAuto.setEnabled(false);
+				}
+			}
+		});
 
 		tblclmnCodiceNoleggio.setWidth(100);
 		tblclmnCodiceNoleggio.setText("codice noleggio");
@@ -312,7 +345,60 @@ public class Carsharing {
 		tblclmnFine.setWidth(75);
 		tblclmnFine.setText("fine");
 
+		tblclmnAutoInUso.setWidth(75);
+		tblclmnAutoInUso.setText("auto in uso");
+
 		tblclmnAutoRestituita.setWidth(85);
 		tblclmnAutoRestituita.setText("auto restituita");
+
+		btnConfermaPrenotazione.setEnabled(false);
+		btnConfermaPrenotazione.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				d.confermaPrenotazione(targa);
+				svuotaTabella();
+			}
+		});
+		btnConfermaPrenotazione.setBounds(10, 275, 150, 25);
+		btnConfermaPrenotazione.setText("conferma prenotazione");
+
+		dateConsegna.setBounds(305, 275, 80, 24);
+
+		lblDataConsegna.setBounds(187, 285, 88, 15);
+		lblDataConsegna.setText("Data consegna");
+
+		btnConsegnaAuto.setBounds(391, 275, 90, 25);
+		btnConsegnaAuto.setText("Consegna auto");
+		btnConsegnaAuto.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Date dataConsegna = null;
+
+				try {
+					dataConsegna = df.parse(
+							dateConsegna.getYear() + "-" + (dateConsegna.getMonth() + 1) + "-" + dateConsegna.getDay());
+					String dataC = df.format(dataConsegna);
+					if (dataC.compareTo(temp_dataFine) < 0) {
+						MessageBox messageBox = new MessageBox(shlCarsharing);
+						messageBox.setMessage("Data di consegna non ancora raggiunta.");
+						messageBox.setText("Alert");
+						messageBox.open();
+					} else if (dataC.compareTo(temp_dataFine) == 0) {
+						Date data1 = null;
+						Date data2 = null;
+						
+						data1 = df.parse(temp_dataInizio);
+						data2 = df.parse(temp_dataFine);
+						long diff = data2.getTime() - data1.getTime();
+						System.out.println(diff / (1000 * 60 * 60 * 24));
+					} else {
+						
+					}
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 	}
 }
