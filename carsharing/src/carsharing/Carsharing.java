@@ -35,7 +35,9 @@ public class Carsharing {
 	String temp_auto_restituita = "";
 	String targa = "";
 	String temp_dataInizio = "";
-	String temp_dataFine  = "";
+	String temp_dataFine = "";
+	String temp_codice_noleggio = "";
+	double costo = 0;
 
 	/**
 	 * Launch the application.
@@ -84,10 +86,18 @@ public class Carsharing {
 		return codiceFiscale;
 	}
 
+	/**
+	 * Svuota la tabella
+	 */
 	private void svuotaTabella() {
 		table.removeAll();
 	}
 
+	/**
+	 * Riempie la tabella con i risultati della ricerca
+	 * 
+	 * @param risultati
+	 */
 	private void popolaTabella(ArrayList<Noleggio> risultati) {
 		for (int i = 0; i < risultati.size(); i++) {
 			String dataInizio = df.format(risultati.get(i).getInizio());
@@ -108,9 +118,10 @@ public class Carsharing {
 	 */
 	protected void createContents() {
 		shlCarsharing = new Shell();
-		shlCarsharing.setSize(650, 395);
+		shlCarsharing.setSize(650, 345);
 		shlCarsharing.setText("Carsharing");
 
+		// creo e inizializzo tutti gli elementi grafici, alcuni elementi sono creati all'inizio del programma poiché utilizzati anche da altre funzioni
 		Combo comboSocio = new Combo(shlCarsharing, SWT.NONE);
 		Label lblCodiceFiscale = new Label(shlCarsharing, SWT.NONE);
 		lblCodiceFiscale.setFont(SWTResourceManager.getFont("Segoe UI", 11, SWT.NORMAL));
@@ -132,12 +143,14 @@ public class Carsharing {
 		TableColumn tblclmnAutoRestituita = new TableColumn(table, SWT.NONE);
 		Button btnConfermaPrenotazione = new Button(shlCarsharing, SWT.NONE);
 		DateTime dateConsegna = new DateTime(shlCarsharing, SWT.BORDER);
+		dateConsegna.setEnabled(false);
 		Label lblDataConsegna = new Label(shlCarsharing, SWT.NONE);
+		lblDataConsegna.setEnabled(false);
 		Button btnConsegnaAuto = new Button(shlCarsharing, SWT.NONE);
-		btnConsegnaAuto.setEnabled(false);
+		Button btnEliminaAuto = new Button(shlCarsharing, SWT.NONE);
 
+		// all'avvio ottengo la lista dei soci e li inserisco nella combo
 		risultatiSocio = d.listaSoci();
-
 		for (int i = 0; i < risultatiSocio.size(); i++) {
 			comboSocio.add(risultatiSocio.get(i).getCognome() + " " + risultatiSocio.get(i).getNome());
 		}
@@ -145,6 +158,7 @@ public class Carsharing {
 		comboSocio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				// a seconda del socio selezionato restituisce il codice fiscale corrispondente
 				switch (comboSocio.getSelectionIndex()) {
 				case 0:
 					cf = ottieniCF(comboSocio.getText());
@@ -177,17 +191,19 @@ public class Carsharing {
 		lblCodiceFiscale.setBounds(139, 10, 221, 23);
 		lblCodiceFiscale.setText("CF: ");
 
+		// inserisco un nuovo noleggio
 		btnNuovoNoleggio.setBounds(441, 7, 183, 25);
 		btnNuovoNoleggio.setText("Nuovo noleggio");
 		btnNuovoNoleggio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (StringUtils.isBlank(cf)) {
+				if (StringUtils.isBlank(cf)) {	// se non viene selezionato nessun socio, mostra un messaggio di allerta
 					MessageBox messageBox = new MessageBox(shlCarsharing);
 					messageBox.setMessage("Nessun socio selezionato.");
 					messageBox.setText("Alert");
 					messageBox.open();
 				} else {
+					// prendo le date del noleggio
 					Date dataI = null;
 					Date dataF = null;
 					Date date = null;
@@ -220,21 +236,24 @@ public class Carsharing {
 					String dataFine = data.get(Calendar.YEAR) + "-" + (data.get(Calendar.MONTH) + 1) + "-"
 							+ data.get(Calendar.DAY_OF_MONTH);
 
+					// controlli sulle date es: la data d'inizio non può essere più grande fi quella di fine
 					if (dataI.before(dataF) || (dataI.equals(date) || dataI.after(date))) {
-						if (dataI.after(dataF)) {
+						if (dataI.after(dataF)) {	// se la data non è valida, mostra un messaggio di allerta
 							MessageBox messageBox = new MessageBox(shlCarsharing);
 							messageBox.setMessage("Data non valida.");
 							messageBox.setText("Alert");
 							messageBox.open();
 						} else {
+							// se non ci sono problemi, cerca l'elenco delle auto disponibili
 							risultatiAuto = d.cercaAuto(dataI, dataF, cf);
 
-							if (risultatiAuto.isEmpty()) {
+							if (risultatiAuto.isEmpty()) {	// se la ricerca non ha dato risultati avverto il socio
 								MessageBox messageBox = new MessageBox(shlCarsharing);
 								messageBox.setMessage("La ricerca non ha dato nessun risultato.");
 								messageBox.setText("Alert");
 								messageBox.open();
 							} else {
+								// se la ricerca ha dato esito positivo, apre una nuova interfaccia con i dati del socio, le date, le auto disponibili per il nuovo noleggio
 								NoleggiaAuto noleggiaAuto = new NoleggiaAuto(cf, dataInizio, dataFine, risultatiAuto,
 										d);
 								noleggiaAuto.open();
@@ -247,6 +266,10 @@ public class Carsharing {
 						messageBox.open();
 					}
 				}
+				// resetto i campi in cui visualizza il socio
+				cf = "";
+				comboSocio.setText("");
+				lblCodiceFiscale.setText("CF:");
 			}
 		});
 
@@ -267,12 +290,13 @@ public class Carsharing {
 		btnCerca.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (StringUtils.isBlank(cf)) {
+				if (StringUtils.isBlank(cf)) {	// se non viene selezionato nessun socio, mostra un messaggio di allerta
 					MessageBox messageBox = new MessageBox(shlCarsharing);
 					messageBox.setMessage("Nessun socio selezionato.");
 					messageBox.setText("Alert");
 					messageBox.open();
 				} else {
+					// prendo le date per la ricerca
 					Date dataI = null;
 					Date dataF = null;
 
@@ -285,17 +309,20 @@ public class Carsharing {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					// cerca i noleggi che ha effettuato un socio tra le due date scelte
 					risultatiNoleggio = d.cercaNoleggio(dataI, dataF, cf);
 
-					if (risultatiNoleggio.isEmpty()) {
+					if (risultatiNoleggio.isEmpty()) {	// se la ricerca non ha dato risultati, mostra un messaggio di allerta
 						svuotaTabella();
 						MessageBox messageBox = new MessageBox(shlCarsharing);
 						messageBox.setMessage("La ricerca non ha dato nessun risultato.");
 						messageBox.setText("Alert");
 						messageBox.open();
 					} else {
+						// se la ricerca ha dato esito positivo, svuota la tabella e la riempie con i risultati della ricerca
 						svuotaTabella();
 						popolaTabella(risultatiNoleggio);
+						// resetto i campi in cui visualizza il socio
 						cf = "";
 						comboSocio.setText("");
 						lblCodiceFiscale.setText("CF:");
@@ -310,20 +337,27 @@ public class Carsharing {
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				// quando viene selezionato un record nella tabella prende i dati di quel record
 				TableItem tableItem = new TableItem(table, SWT.NONE);
 				tableItem = table.getItem(table.getSelectionIndex());
+				temp_codice_noleggio = tableItem.getText(0);
 				targa = tableItem.getText(1);
 				temp_dataInizio = tableItem.getText(3);
 				temp_dataFine = tableItem.getText(4);
 				temp_auto_in_uso = tableItem.getText(5);
 				temp_auto_restituita = tableItem.getText(6);
+				// a seconda dello stato dell'auto abilito o disabilito il prestito e la restituzione
 				if (temp_auto_in_uso.equals("false")) {
 					btnConfermaPrenotazione.setEnabled(true);
 				} else {
 					btnConfermaPrenotazione.setEnabled(false);
 					if (temp_auto_restituita.equals("false")) {
+						lblDataConsegna.setEnabled(true);
+						dateConsegna.setEnabled(true);
 						btnConsegnaAuto.setEnabled(true);
 					} else {
+						lblDataConsegna.setEnabled(false);
+						dateConsegna.setEnabled(false);
 						btnConsegnaAuto.setEnabled(false);
 					}
 				}
@@ -355,6 +389,7 @@ public class Carsharing {
 		btnConfermaPrenotazione.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				// il socio conferma la prenotazione
 				d.confermaPrenotazione(targa);
 				svuotaTabella();
 				btnConfermaPrenotazione.setEnabled(false);
@@ -363,45 +398,91 @@ public class Carsharing {
 		btnConfermaPrenotazione.setBounds(10, 275, 150, 25);
 		btnConfermaPrenotazione.setText("conferma prenotazione");
 
-		dateConsegna.setBounds(305, 275, 80, 24);
+		dateConsegna.setBounds(260, 275, 80, 24);
 
-		lblDataConsegna.setBounds(187, 285, 88, 15);
+		lblDataConsegna.setBounds(166, 280, 88, 15);
 		lblDataConsegna.setText("Data consegna");
 
-		btnConsegnaAuto.setBounds(391, 275, 90, 25);
+		btnConsegnaAuto.setBounds(346, 275, 135, 25);
 		btnConsegnaAuto.setText("Consegna auto");
+		btnConsegnaAuto.setEnabled(false);
 		btnConsegnaAuto.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				// il socio restituisce l'auto
+				// eseguo i controlli sulle date
 				Date dataConsegna = null;
+				Date data1 = null;
+				Date data2 = null;
+				int diff = 0;
+				int ritardo = 0;
 
 				try {
 					dataConsegna = df.parse(
 							dateConsegna.getYear() + "-" + (dateConsegna.getMonth() + 1) + "-" + dateConsegna.getDay());
 					String dataC = df.format(dataConsegna);
 					if (dataC.compareTo(temp_dataFine) < 0) {
+						// se non è stata raggiunta la data di consegna, avverto il socio
 						MessageBox messageBox = new MessageBox(shlCarsharing);
 						messageBox.setMessage("Data di consegna non ancora raggiunta.");
 						messageBox.setText("Alert");
 						messageBox.open();
 					} else if (dataC.compareTo(temp_dataFine) == 0) {
-						Date data1 = null;
-						Date data2 = null;
+						// se la data di consegna corrisponde il socio paga l'importo per l'auto presa in prestito
 						
 						data1 = df.parse(temp_dataInizio);
 						data2 = df.parse(temp_dataFine);
 						
 						// calcolo la differenza tra la data d'inizio e quella di fine
-						int diff = (int) (data2.getTime() - data1.getTime());
-						diff = diff / 86400000;
-						System.out.println(diff);
+						diff = (int) (data2.getTime() - data1.getTime());
+						diff = diff / 86400000;	
+						costo = d.consegnaAuto(diff, ritardo, temp_codice_noleggio, targa, dataC);
+						// visualizzo il costo del noleggio per l'auto corrispondente
+						MessageBox messageBox = new MessageBox(shlCarsharing);
+						messageBox.setMessage("Il costo del noleggio è: " + costo + "\ngiorni di ritardo: " + ritardo);
+						messageBox.setText("Alert");
+						messageBox.open();
+						diff = 0;
+						ritardo = 0;
 					} else {
+						// se la data di consegna eccede, il socio paga il prestito e un importo extra per ogni giorni di ritardo
 						
+						data1 = df.parse(temp_dataInizio);
+						data2 = df.parse(temp_dataFine);
+						
+						// calcolo la differenza tra la data d'inizio e quella di fine
+						diff = (int) (data2.getTime() - data1.getTime());
+						diff = diff / 86400000;	
+						
+						ritardo = (int)(dataConsegna.getTime() - data2.getTime());
+						ritardo = ritardo / 86400000;
+						costo = d.consegnaAuto(diff, ritardo, temp_codice_noleggio, targa, dataC);
+						// visualizzo il costo del noleggio per l'auto corrispondente più il costo per il ritardo
+						MessageBox messageBox = new MessageBox(shlCarsharing);
+						messageBox.setMessage("Il costo del noleggio è: " + costo + "\ngiorni di ritardo: " + ritardo);
+						messageBox.setText("Alert");
+						messageBox.open();
+						diff = 0;
+						ritardo = 0;
 					}
+					svuotaTabella();
+					lblDataConsegna.setEnabled(false);
+					dateConsegna.setEnabled(false);
+					btnConsegnaAuto.setEnabled(false);
 				} catch (ParseException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			}
+		});
+		
+		btnEliminaAuto.setBounds(487, 275, 137, 25);
+		btnEliminaAuto.setText("Elimina auto");
+		btnEliminaAuto.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				EliminaAuto eliminaAuto = new EliminaAuto(d);
+				eliminaAuto.open();
 			}
 		});
 	}
